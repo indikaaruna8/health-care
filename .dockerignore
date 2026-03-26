@@ -1,0 +1,27 @@
+# Ignore MySQL data directory
+mysql/
+
+# Ignore node modules
+node_modules/
+src/node_modules/
+
+# Ignore logs
+*.log
+storage/logs/
+
+# Ignore environment files
+.env
+.env.*
+!.env.example
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore Docker related files
+.dockerignore
+docker-compose*.yml
