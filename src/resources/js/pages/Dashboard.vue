@@ -7,7 +7,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Dashboard',
+                title: 'Dashboard 1',
                 href: dashboard(),
             },
         ],
@@ -17,7 +17,6 @@ defineOptions({
 
 <template>
     <Head title="Dashboard" />
-
     <div
         class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
     >
