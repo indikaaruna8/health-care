@@ -3,7 +3,7 @@ mysql/*
 /app/logs/*
 !app/cache/.gitkeep
 !app/logs/.gitkeep
-
+/configs/certs/*
 # Email spool folder
 /app/spool/*
 

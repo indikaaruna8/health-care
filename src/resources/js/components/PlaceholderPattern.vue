@@ -28,4 +28,10 @@ const patternId = `pattern-${useId()}`;
             height="100%"
         ></rect>
     </svg>
+    <div style="text-align: center;width: 100%; height: 80px; padding: 100px">
+        <span class="text-sm text-neutral-500 dark:text-neutral-400">
+            Placeholder Pattern
+        </span>
+
+    </div>
 </template>

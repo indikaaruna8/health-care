@@ -1,9 +1,12 @@
 import inertia from '@inertiajs/vite';
-import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
+import fs from 'fs';
+
+const vitePort = Number(process.env.VITE_PORT) || 5173;
+const viteHost = process.env.VITE_HOST || '0.0.0.0';
 
 export default defineConfig({
     plugins: [
@@ -13,26 +16,25 @@ export default defineConfig({
         }),
         inertia(),
         tailwindcss(),
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
-            },
-        }),
-        // wayfinder({
-        //     formVariants: true,
-        // }),
+        vue(),
     ],
+
     server: {
-        host: '0.0.0.0', // Listen on all interfaces
-        port: 5173,
+        host: viteHost,
+        port: vitePort,
         strictPort: true,
-        // Enable HMR (Hot Module Replacement)
+
+        // HTTPS enabled
+        https: {
+            key: fs.readFileSync('/certs/localhost-key.pem'),
+            cert: fs.readFileSync('/certs/localhost.pem'),
+        },
+
+        // IMPORTANT FIX
         hmr: {
-            host: 'localhost',
-            port: 5173,
+            protocol: 'wss',   // 🔥 REQUIRED for HTTPS
+            host: 'localhost', // or '127.0.0.1'
+            port: vitePort,
         },
     },
 });
