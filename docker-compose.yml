@@ -10,7 +10,13 @@ services:
       - ./src:/var/www/html
     networks:
       - laravel_network  # Define the network here
-
+    environment:
+       - APP_KEY=${APP_KEY:-base64:defaultkey}  # Set a default APP_KEY if not provided
+       - DB_HOST=${APP_DB_HOST:-127.0.0.1}
+       - DB_PORT=${APP_DB_PORT:-3306}
+       - DB_DATABASE=${APP_DATABASE:-laravel}
+       - DB_USERNAME=${APP_DB_USERNAME:-root}
+       - DB_PASSWORD=${APP_PASSWORD:-helthcarepwd}
   nginx:
     build:
       context: .
@@ -32,10 +38,10 @@ services:
     image: mysql:9.6.0
     container_name: laravel-db
     environment:
-      MYSQL_DATABASE: helthcare
-      MYSQL_ROOT_PASSWORD: helthcarepwd
+      MYSQL_DATABASE: ${APP_DATABASE:-helthcare}
+      MYSQL_ROOT_PASSWORD: ${APP_PASSWORD:-helthcarepwd}
     ports:
-      - "33306:3306"  # Map port 33306 on host to port 3306 in the container
+      - "${APP_DB_HOST_FORWERD_TO:-33306}:3306"  # Map port 33306 on host to port 3306 in the container
     volumes:
       - ./mysql:/var/lib/mysql
     networks:
