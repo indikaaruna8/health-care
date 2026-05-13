@@ -12,11 +12,13 @@ services:
       - laravel_network  # Define the network here
     environment:
        - APP_KEY=${APP_KEY:-base64:defaultkey}  # Set a default APP_KEY if not provided
+       - DB_CONNECTION=mysql
        - DB_HOST=${APP_DB_HOST:-127.0.0.1}
        - DB_PORT=${APP_DB_PORT:-3306}
        - DB_DATABASE=${APP_DATABASE:-laravel}
        - DB_USERNAME=${APP_DB_USERNAME:-root}
        - DB_PASSWORD=${APP_PASSWORD:-helthcarepwd}
+       
   nginx:
     build:
       context: .
@@ -64,8 +66,26 @@ services:
       - VITE_PORT=${VITE_PORT:-5173}
       - VITE_HOST=${VITE_HOST:-0.0.0.0}
     ports:
-      - "${VITE_PORT:-5173}:5173"  
-
+      - "${VITE_PORT:-5173}:${VITE_PORT:-5173}"
+  redis:
+    image: redis:7-alpine
+    container_name: laravel-redis
+    restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-null}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - laravel_network
+  mailpit:
+    image: axllent/mailpit
+    container_name: laravel-mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    networks:
+      - laravel_network    
 networks:
   laravel_network:
     driver: bridge
