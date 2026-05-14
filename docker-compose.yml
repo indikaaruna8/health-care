@@ -4,12 +4,12 @@ services:
     build:
       context: .
       dockerfile: ./configs/php/Dockerfile
-    image: laravel-app
-    container_name: laravel-app
+    image: health10-app
+    container_name: health10-app
     volumes:
       - ./src:/var/www/html
     networks:
-      - laravel_network  # Define the network here
+      - health10_network  # Define the network here
     environment:
        - APP_KEY=${APP_KEY:-base64:defaultkey}  # Set a default APP_KEY if not provided
        - DB_CONNECTION=mysql
@@ -23,8 +23,8 @@ services:
     build:
       context: .
       dockerfile: ./configs/nginx/Dockerfile
-    image: nginx-laravel
-    container_name: laravel-nginx    
+    image: nginx-health10
+    container_name: health10-nginx    
     ports:
       - "${APP_PORT:-8088}:443" 
     volumes:
@@ -33,12 +33,12 @@ services:
     depends_on:
       - app
     networks:
-      - laravel_network
+      - health10_network
 
   # Database Service (MySQL)
   db:
     image: mysql:9.6.0
-    container_name: laravel-db
+    container_name: health10-db
     environment:
       MYSQL_DATABASE: ${APP_DATABASE:-helthcare}
       MYSQL_ROOT_PASSWORD: ${APP_PASSWORD:-helthcarepwd}
@@ -47,21 +47,21 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
     networks:
-      - laravel_network  # Reference the same network here
+      - health10_network  # Reference the same network here
 
   # Node.js Service
   node:
     build:
       context: .
       dockerfile: ./configs/node/Dockerfile
-    image: laravel-node
-    container_name: laravel-node   
+    image: health10-node
+    container_name: health10-node   
     volumes:
       - ./src:/var/www/html
       - /var/www/html/node_modules
       - ./configs/certs:/certs
     networks:
-      - laravel_network
+      - health10_network
     environment:
       - VITE_PORT=${VITE_PORT:-5173}
       - VITE_HOST=${VITE_HOST:-0.0.0.0}
@@ -69,23 +69,23 @@ services:
       - "${VITE_PORT:-5173}:${VITE_PORT:-5173}"
   redis:
     image: redis:7-alpine
-    container_name: laravel-redis
+    container_name: health10-redis
     restart: unless-stopped
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-null}
     ports:
       - "${REDIS_PORT:-6379}:6379"
     networks:
-      - laravel_network
+      - health10_network
   mailpit:
     image: axllent/mailpit
-    container_name: laravel-mailpit
+    container_name: health10-mailpit
     restart: unless-stopped
     ports:
       - "${MAILPIT_SMTP_PORT:-1025}:1025"
       - "${MAILPIT_UI_PORT:-8025}:8025"
     networks:
-      - laravel_network    
+      - health10_network    
 networks:
-  laravel_network:
+  health10_network:
     driver: bridge
