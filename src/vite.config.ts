@@ -7,6 +7,11 @@ import fs from 'fs';
 
 const vitePort = Number(process.env.VITE_PORT) || 5173;
 const viteHost = process.env.VITE_HOST || '0.0.0.0';
+const httpsEnabled = process.env.HTTPS_ENABLED === 'true';
+const https = httpsEnabled ? {
+    key: fs.readFileSync('/certs/localhost-key.pem'),
+    cert: fs.readFileSync('/certs/localhost.pem'),
+} : false;
 
 export default defineConfig({
     plugins: [
@@ -25,14 +30,11 @@ export default defineConfig({
         strictPort: true,
 
         // HTTPS enabled
-        https: {
-            key: fs.readFileSync('/certs/localhost-key.pem'),
-            cert: fs.readFileSync('/certs/localhost.pem'),
-        },
+        https: https,
 
         // IMPORTANT FIX
         hmr: {
-            protocol: 'wss',   // 🔥 REQUIRED for HTTPS
+            protocol: httpsEnabled ? 'wss' : 'ws',   // 🔥 REQUIRED for HTTPS
             host: 'localhost', // or '127.0.0.1'
             port: vitePort,
         },
