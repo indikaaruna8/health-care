@@ -18,6 +18,19 @@ services:
        - DB_DATABASE=${APP_DATABASE:-laravel}
        - DB_USERNAME=${APP_DB_USERNAME:-root}
        - DB_PASSWORD=${APP_PASSWORD:-helthcarepwd}
+       - APP_URL=${APP_URL:-http://localhost:8088}
+       - APP_ENV=${APP_ENV:-local}
+       - APP_DEBUG=${APP_DEBUG:-true}
+       - REDIS_HOST=${REDIS_HOST:-redis}
+       - REDIS_PORT=${REDIS_PORT:-6379}
+       - REDIS_PASSWORD=${REDIS_PASSWORD:-null}
+       - MAILPIT_SMTP_PORT=${MAILPIT_SMTP_PORT:-1025}
+       - MAILPIT_UI_PORT=${MAILPIT_UI_PORT:-8025}
+       - MAILPIT_HOST=${MAILPIT_HOST:-mailpit}
+    depends_on:
+      - db
+      - redis
+      - mailpit
        
   nginx:
     build:
