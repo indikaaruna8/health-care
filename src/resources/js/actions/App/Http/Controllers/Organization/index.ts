@@ -1,7 +1,7 @@
-import OrganizationController from './OrganizationController'
+import OrganizationIndexController from './OrganizationIndexController'
 
 const Organization = {
-    OrganizationController: Object.assign(OrganizationController, OrganizationController),
+    OrganizationIndexController: Object.assign(OrganizationIndexController, OrganizationIndexController),
 }
 
 export default Organization

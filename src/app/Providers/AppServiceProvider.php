@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\Organization\Contracts\OrganizationSearchRepositoryInterface;
+use App\Repositories\Organization\OrganizationSearchRepository;
+use App\Services\Organization\Contracts\OrganizationSearchServiceInterface;
+use App\Services\Organization\OrganizationSearchService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +19,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(OrganizationSearchRepositoryInterface::class, function ($app) {
+            return new OrganizationSearchRepository();
+        });
+
+        $this->app->bind(OrganizationSearchServiceInterface::class, function ($app) {
+            return new OrganizationSearchService();
+        });
     }
 
     /**
@@ -37,7 +47,8 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
+        Password::defaults(
+            fn (): ?Password => app()->isProduction()
             ? Password::min(12)
                 ->mixedCase()
                 ->letters()

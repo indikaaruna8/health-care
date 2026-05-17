@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 defineProps({
     title: String,
     rows: Array,
@@ -8,6 +8,28 @@ defineProps({
 });
 const showFilters = ref(false);
 const search = ref("");
+const loading = ref(true);
+
+let timeout = null;
+watch(search, (value) => {
+    clearTimeout(timeout);
+
+    if (!value || value.length < 3) {
+        return; // do nothing until 3 chars
+    }
+
+    timeout = setTimeout(async () => {
+        if (!props.onSearch) return;
+
+        loading.value = true;
+
+        try {
+            await props.onSearch(value); // 👈 call API from parent
+        } finally {
+            loading.value = false;
+        }
+    }, 500); // debounce 500ms
+});
 </script>
 
 <template>
@@ -39,6 +61,11 @@ const search = ref("");
         <div class="border rounded overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-100">
+                    <tr v-if="loading">
+                        <td :colspan="columns.length + 2" class="text-center p-4">
+                            Loading...
+                        </td>
+                    </tr>
                     <tr>
                         <th class="p-2">
                             <input type="checkbox" />

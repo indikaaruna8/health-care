@@ -1,8 +1,30 @@
 <script setup>
 import DataTablePage from "@/components/DataTablePage.vue";
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 defineProps({
-    organizations: Array,
+    orgs: Array,
+});
+
+const organizations = ref([]);
+
+/**
+ * API CALL
+ */
+const searchOrganizations = async (query = "") => {
+    const res = await axios.get("/organization/search", {
+        params: { search: query },
+    });
+
+    organizations.value = res.data.data;
+};
+
+/**
+ * LOAD ON PAGE START
+ */
+onMounted(() => {
+    searchOrganizations(); // 👈 initial load
 });
 </script>
 

@@ -12,30 +12,11 @@ use App\Http\Requests\Organization\CreateOrganizationRequest ;
 use App\Http\Resources\Organization\OrganizationResource;
 use App\Services\OrganizationService;
 use Symfony\Component\HttpFoundation\Response;
-
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class OrganizationController extends Controller
 {
-    public function index(): InertiaResponse
-    {
-       $organizations = [
-            [
-                'id' => 1,
-                'name' => 'ABC Hospital',
-            ],
-            [
-                'id' => 2,
-                'name' => 'XYZ Medical',
-            ],
-        ];
-
-        return Inertia::render('organization/index', [
-            'organizations' => $organizations,
-        ]);
-    }
-
     public function create(CreateOrganizationRequest $request, OrganizationService $service): OrganizationResource
     {
         $data = $request->onlyValidated();
