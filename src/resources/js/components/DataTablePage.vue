@@ -1,85 +1,109 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import type {
-    Organization,
     Pagination,
     TableColumn,
+} from "@/types/grid";
+import type {
+    Organization,
 } from "@/types/organization";
 
 interface Props {
     title: string;
     rows: Organization[];
-    columns: TableColumn[];
+    columns: TableColumn<Organization>[];
     pagination: Pagination;
-    onSearch?: (query: string) => Promise<void>;
-    onPageChange?: (page: number) => Promise<void>;
+    loading?: boolean;
 }
 
 const props = defineProps<Props>();
 
-const showFilters = ref<boolean>(false);
-const search = ref<string>("");
-const loading = ref<boolean>(false);
+const emit = defineEmits<{
+    (e: "search", value: string): void;
+    (e: "page-change", page: number): void;
+    (e: "clear-filters"): void;
+    (
+        e: "filter",
+        value: Record<string, string>
+    ): void;
+}>();
+
+const showFilters = ref(false);
+const search = ref("");
+
+
+const clearSearch = () => {
+    search.value = "";
+    emit("clear-filters");
+};
+
+const nextPage = (pagination: Pagination) => {
+    if (
+        pagination.current_page <
+        pagination.last_page
+    ) {
+        emit(
+            "page-change",
+            pagination.current_page + 1
+        );
+    }
+};
+
+const prevPage = (pagination: Pagination) => {
+    if (pagination.current_page > 1) {
+        emit(
+            "page-change",
+            pagination.current_page - 1
+        );
+    }
+};
 
 let timeout: ReturnType<typeof setTimeout>;
-
 watch(search, (value: string) => {
     clearTimeout(timeout);
 
-    if (!value || value.length < 3) {
-        return;
-    }
+    timeout = setTimeout(() => {
 
-    timeout = setTimeout(async () => {
-        if (!props.onSearch) return;
+        /**
+         * EMPTY SEARCH
+         * reload all data
+         */
+        if (value.length === 0) {
+            emit("search", "");
 
-        loading.value = true;
-
-        try {
-            await props.onSearch(value);
-        } finally {
-            loading.value = false;
+            return;
         }
+
+        /**
+         * WAIT UNTIL 3 CHARS
+         */
+        if (value.length < 3) {
+            return;
+        }
+
+        emit("search", value);
+
     }, 500);
 });
-
-/**
- * PAGINATION
- */
-const nextPage = async () => {
-    if (
-        props.pagination.current_page <
-        props.pagination.last_page
-    ) {
-        await props.onPageChange?.(
-            props.pagination.current_page + 1
-        );
-    }
-};
-
-const prevPage = async () => {
-    if (props.pagination.current_page > 1) {
-        await props.onPageChange?.(
-            props.pagination.current_page - 1
-        );
-    }
-};
 </script>
 
 <template>
     <div class="p-4 space-y-4">
         <!-- HEADER -->
         <div class="flex items-center justify-between">
-            <h1 class="text-xl font-semibold">{{ title }}ss</h1>
+            <h1 class="text-xl font-semibold">{{ props.title }}</h1>
             <div class="flex items-center gap-2">
                 <!-- Search -->
                 <div class="flex">
                     <input v-model="search" type="text" placeholder="Search..."
                         class="border rounded-l-full px-3 py-1 focus:outline-none" />
-                    <button class="bg-blue-600 text-white px-4 rounded-r-full">
+                    <button class="bg-blue-600 text-white px-4 rounded-r-full" @click="emit('search', search)">
                         Search
                     </button>
                 </div>
+                <button @click="clearSearch" class="border px-3 py-1 rounded">
+                    Clear
+                </button>
                 <button @click="showFilters = !showFilters" class="border px-3 py-1 rounded">
                     Filters
                 </button>
@@ -90,31 +114,36 @@ const prevPage = async () => {
         <div class="border p-3 rounded bg-gray-50" v-if="showFilters">
             <slot name="filters" />
         </div>
-
         <!-- TABLE -->
         <div class="border rounded overflow-x-auto">
             <table class="w-full text-sm">
+
                 <thead class="bg-gray-100">
-                    <tr v-if="loading">
-                        <td :colspan="columns.length + 2" class="text-center p-4">
-                            Loading...
-                        </td>
-                    </tr>
                     <tr>
                         <th class="p-2">
                             <input type="checkbox" />
                         </th>
-
                         <th v-for="col in columns" :key="col.key" class="p-2 text-left">
                             {{ col.label }}
                         </th>
-
                         <th class="p-2">Actions</th>
                     </tr>
                 </thead>
-
                 <tbody>
-                    <tr v-for="row in rows" :key="row.id" class="border-t">
+                    <!-- LOADING -->
+                    <tr v-if="loading">
+                        <td :colspan="columns.length + 2" class="text-center p-6">
+                            Loading...
+                        </td>
+                    </tr>
+                    <!-- EMPTY -->
+                    <tr v-else-if="props.rows.length === 0">
+                        <td :colspan="columns.length + 2" class="text-center p-6">
+                            No data found
+                        </td>
+                    </tr>
+                    <!-- DATA -->
+                    <tr v-else v-for="row in props.rows" :key="row.id" class="border-t">
                         <td class="p-2">
                             <input type="checkbox" />
                         </td>
@@ -134,7 +163,7 @@ const prevPage = async () => {
         <!-- PAGINATION -->
         <div class="flex justify-end items-center gap-2">
             <button class="px-3 py-1 border rounded disabled:opacity-50" :disabled="pagination.current_page === 1"
-                @click="prevPage">
+                @click="prevPage(pagination)">
                 Prev
             </button>
 
@@ -144,7 +173,7 @@ const prevPage = async () => {
             </span>
 
             <button class="px-3 py-1 border rounded disabled:opacity-50"
-                :disabled="pagination.current_page === pagination.last_page" @click="nextPage">
+                :disabled="pagination.current_page === pagination.last_page" @click="nextPage(pagination)">
                 Next
             </button>
         </div>

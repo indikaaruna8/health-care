@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import axios from "axios";
-import { ref, onMounted } from "vue";
-
-
+import { ref, onMounted, reactive, watch } from "vue";
 import DataTablePage from "@/components/DataTablePage.vue";
-
+import { organizationService } from "@/services/organization";
 import type {
     Organization,
     Pagination,
-    ApiResponse,
     TableColumn,
 } from "@/types/organization";
 
 const organizations = ref<Organization[]>([]);
 const search = ref<string>("");
+const loading = ref(false);
 const pagination = ref<Pagination>({
     current_page: 1,
     per_page: 15,
@@ -26,6 +23,12 @@ const pagination = ref<Pagination>({
     previous_page_url: null,
 });
 
+const filters = reactive({
+    name: "",
+    email: "",
+    plan: "",
+});
+
 const columns: TableColumn[] = [
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
@@ -34,34 +37,63 @@ const columns: TableColumn[] = [
     { key: "plan", label: "Plan" },
 ];
 
+const clearFilters = () => {
+    filters.name = "";
+    filters.email = "";
+    filters.plan = "";
+};
+
 const loadOrganizations = async (
     search = "",
     page = 1
 ) => {
-    const response = await axios.get<ApiResponse<Organization>>(
-        "/organization/search",
-        {
-            params: {
-                search,
-                page,
-            },
-        }
-    );
+    loading.value = true;
 
-    organizations.value = response.data.data;
-    pagination.value = response.data.meta.pagination;
+    try {
+        const response = await organizationService.search(
+            search,
+            page,
+            filters
+        );
+        organizations.value =
+            response.data;
+        pagination.value =
+            response.meta.pagination;
+
+    } finally {
+        loading.value = false;
+    }
 };
 
 const searchOrganizations = async (
     query: string
 ) => {
-    search.value = query;
     await loadOrganizations(query, 1);
 };
 
-const changePage = async (page: number) => {
-    await loadOrganizations(search.value, page);
+const changePage = async (
+    page: number
+) => {
+    await loadOrganizations(
+        search.value,
+        page
+    );
 };
+
+let timeout: ReturnType<typeof setTimeout>;
+watch(
+    filters,
+    () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(async () => {
+            await loadOrganizations();
+        }, 1000);
+    },
+    {
+        deep: true,
+    }
+);
+
 
 onMounted(async () => {
     await loadOrganizations();
@@ -70,7 +102,7 @@ onMounted(async () => {
 
 <template>
     <DataTablePage title="Organizations" :rows="organizations" :columns="columns" :pagination="pagination"
-        :onSearch="searchOrganizations" :onPageChange="changePage">
+        :loading="loading" @search="searchOrganizations" @page-change="changePage" @clear-filters="clearFilters">
 
         <!-- HEADER RIGHT -->
         <template #header-right>
@@ -83,17 +115,34 @@ onMounted(async () => {
         <!-- FILTERS -->
         <template #filters>
             <div class="grid grid-cols-3 gap-2">
-                <input class="border p-2 rounded" placeholder="Name" />
-                <input class="border p-2 rounded" placeholder="Email" />
-                <select class="border p-2 rounded">
-                    <option>All Plans</option>
+
+                <input v-model="filters.name" class="border p-2 rounded" placeholder="Name" />
+
+                <input v-model="filters.email" class="border p-2 rounded" placeholder="Email" />
+
+                <select v-model="filters.plan" class="border p-2 rounded">
+                    <option value="">
+                        All Plans
+                    </option>
+
+                    <option value="free">
+                        Free
+                    </option>
+
+                    <option value="basic">
+                        Basic
+                    </option>
+
+                    <option value="premium">
+                        Premium
+                    </option>
                 </select>
+
             </div>
         </template>
-
         <!-- ROW ACTIONS -->
         <template #row-actions="{ row }">
-            <button class="text-blue-600">Edit</button>
+            <button class="text-blue-600">Edit {{ row.name }}</button>
             <button class="text-green-600 ml-2">View</button>
         </template>
     </DataTablePage>
