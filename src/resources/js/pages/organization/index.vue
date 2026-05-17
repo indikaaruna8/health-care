@@ -1,41 +1,76 @@
-<script setup>
-import DataTablePage from "@/components/DataTablePage.vue";
-import { ref, onMounted } from "vue";
+<script setup lang="ts">
 import axios from "axios";
+import { ref, onMounted } from "vue";
 
-defineProps({
-    orgs: Array,
+
+import DataTablePage from "@/components/DataTablePage.vue";
+
+import type {
+    Organization,
+    Pagination,
+    ApiResponse,
+    TableColumn,
+} from "@/types/organization";
+
+const organizations = ref<Organization[]>([]);
+const search = ref<string>("");
+const pagination = ref<Pagination>({
+    current_page: 1,
+    per_page: 15,
+    total: 0,
+    last_page: 1,
+    from: 0,
+    to: 0,
+    has_more_pages: false,
+    next_page_url: null,
+    previous_page_url: null,
 });
 
-const organizations = ref([]);
+const columns: TableColumn[] = [
+    { key: "id", label: "ID" },
+    { key: "name", label: "Name" },
+    { key: "phone", label: "Phone" },
+    { key: "email", label: "Email" },
+    { key: "plan", label: "Plan" },
+];
 
-/**
- * API CALL
- */
-const searchOrganizations = async (query = "") => {
-    const res = await axios.get("/organization/search", {
-        params: { search: query },
-    });
+const loadOrganizations = async (
+    search = "",
+    page = 1
+) => {
+    const response = await axios.get<ApiResponse<Organization>>(
+        "/organization/search",
+        {
+            params: {
+                search,
+                page,
+            },
+        }
+    );
 
-    organizations.value = res.data.data;
+    organizations.value = response.data.data;
+    pagination.value = response.data.meta.pagination;
 };
 
-/**
- * LOAD ON PAGE START
- */
-onMounted(() => {
-    searchOrganizations(); // 👈 initial load
+const searchOrganizations = async (
+    query: string
+) => {
+    search.value = query;
+    await loadOrganizations(query, 1);
+};
+
+const changePage = async (page: number) => {
+    await loadOrganizations(search.value, page);
+};
+
+onMounted(async () => {
+    await loadOrganizations();
 });
 </script>
 
 <template>
-    <DataTablePage title="Organizations" :rows="organizations" :columns="[
-        { key: 'id', label: 'ID' },
-        { key: 'name', label: 'Name' },
-        { key: 'phone', label: 'Phone' },
-        { key: 'email', label: 'Email' },
-        { key: 'plan', label: 'Plan' },
-    ]" :pagination="{ current: 1, total: 10 }">
+    <DataTablePage title="Organizations" :rows="organizations" :columns="columns" :pagination="pagination"
+        :onSearch="searchOrganizations" :onPageChange="changePage">
 
         <!-- HEADER RIGHT -->
         <template #header-right>

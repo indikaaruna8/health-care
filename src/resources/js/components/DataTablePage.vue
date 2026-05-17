@@ -1,21 +1,33 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
-defineProps({
-    title: String,
-    rows: Array,
-    columns: Array,
-    pagination: Object,
-});
-const showFilters = ref(false);
-const search = ref("");
-const loading = ref(true);
+import type {
+    Organization,
+    Pagination,
+    TableColumn,
+} from "@/types/organization";
 
-let timeout = null;
-watch(search, (value) => {
+interface Props {
+    title: string;
+    rows: Organization[];
+    columns: TableColumn[];
+    pagination: Pagination;
+    onSearch?: (query: string) => Promise<void>;
+    onPageChange?: (page: number) => Promise<void>;
+}
+
+const props = defineProps<Props>();
+
+const showFilters = ref<boolean>(false);
+const search = ref<string>("");
+const loading = ref<boolean>(false);
+
+let timeout: ReturnType<typeof setTimeout>;
+
+watch(search, (value: string) => {
     clearTimeout(timeout);
 
     if (!value || value.length < 3) {
-        return; // do nothing until 3 chars
+        return;
     }
 
     timeout = setTimeout(async () => {
@@ -24,19 +36,41 @@ watch(search, (value) => {
         loading.value = true;
 
         try {
-            await props.onSearch(value); // 👈 call API from parent
+            await props.onSearch(value);
         } finally {
             loading.value = false;
         }
-    }, 500); // debounce 500ms
+    }, 500);
 });
+
+/**
+ * PAGINATION
+ */
+const nextPage = async () => {
+    if (
+        props.pagination.current_page <
+        props.pagination.last_page
+    ) {
+        await props.onPageChange?.(
+            props.pagination.current_page + 1
+        );
+    }
+};
+
+const prevPage = async () => {
+    if (props.pagination.current_page > 1) {
+        await props.onPageChange?.(
+            props.pagination.current_page - 1
+        );
+    }
+};
 </script>
 
 <template>
     <div class="p-4 space-y-4">
         <!-- HEADER -->
         <div class="flex items-center justify-between">
-            <h1 class="text-xl font-semibold">{{ title }}</h1>
+            <h1 class="text-xl font-semibold">{{ title }}ss</h1>
             <div class="flex items-center gap-2">
                 <!-- Search -->
                 <div class="flex">
@@ -99,11 +133,20 @@ watch(search, (value) => {
 
         <!-- PAGINATION -->
         <div class="flex justify-end items-center gap-2">
-            <button class="px-3 py-1 border rounded">Prev</button>
+            <button class="px-3 py-1 border rounded disabled:opacity-50" :disabled="pagination.current_page === 1"
+                @click="prevPage">
+                Prev
+            </button>
+
             <span>
-                Page {{ pagination.current }} / {{ pagination.total }}
+                Page {{ pagination.current_page }}
+                of {{ pagination.last_page }}
             </span>
-            <button class="px-3 py-1 border rounded">Next</button>
+
+            <button class="px-3 py-1 border rounded disabled:opacity-50"
+                :disabled="pagination.current_page === pagination.last_page" @click="nextPage">
+                Next
+            </button>
         </div>
 
     </div>
