@@ -1,0 +1,15 @@
+export default {
+    back: 'Back',
+    cancel: 'Cancel',
+    save: 'Save',
+    delete: 'Delete',
+    edit: 'Edit',
+    view: 'View',
+    confirm: 'Are you sure?',
+    saveSuccess: 'Saved successfully',
+    deleteSuccess: 'Deleted successfully',
+    saveError: 'An error occurred while saving',
+    deleteError: 'An error occurred while deleting',
+    saveChanges: 'Save Changes',
+    saveToDraft: 'Save to Draft',
+};
