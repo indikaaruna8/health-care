@@ -9,7 +9,7 @@ export const organizationService = {
         filters: Record<string, string> = {},
     ): Promise<ApiResponse<Organization>> {
         const response = await axios.get<ApiResponse<Organization>>(
-            '/organization/search',
+            '/organizations/search',
             {
                 params: {
                     search,

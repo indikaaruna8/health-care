@@ -17,7 +17,12 @@ use Inertia\Response as InertiaResponse;
 
 class OrganizationController extends Controller
 {
-    public function create(CreateOrganizationRequest $request, OrganizationService $service): OrganizationResource
+    public function create(): InertiaResponse
+    {
+        return Inertia::render('organizations/create');
+    }
+
+    public function store(CreateOrganizationRequest $request, OrganizationService $service): OrganizationResource
     {
         $data = $request->onlyValidated();
 

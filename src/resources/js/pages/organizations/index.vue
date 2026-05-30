@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, watch } from "vue";
 import DataTablePage from "@/components/DataTablePage.vue";
+import organizationsApi from '@/routes/organizations';
 import { organizationService } from "@/services/organization";
-import type {
-    Organization,
-    Pagination,
-    TableColumn,
-} from "@/types/organization";
+import type { Pagination, TableColumn } from "@/types/grid";
+import type { Organization } from "@/types/organization";
+
+
 
 const organizations = ref<Organization[]>([]);
 const search = ref<string>("");
@@ -29,7 +29,11 @@ const filters = reactive({
     plan: "",
 });
 
-const columns: TableColumn[] = [
+const goToCreate = () => {
+    window.location.href = organizationsApi.create().url;
+};
+
+const columns: TableColumn<Organization>[] = [
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
     { key: "phone", label: "Phone" },
@@ -107,7 +111,7 @@ onMounted(async () => {
         <!-- HEADER RIGHT -->
         <template #header-right>
             <!-- Add new -->
-            <button class="bg-green-600 text-white px-3 py-1 rounded">
+            <button class="bg-green-600 text-white px-3 py-1 rounded" @click="goToCreate">
                 + Add
             </button>
         </template>

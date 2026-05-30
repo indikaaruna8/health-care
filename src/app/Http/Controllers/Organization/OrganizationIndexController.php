@@ -20,7 +20,7 @@ class OrganizationIndexController extends Controller
 
     public function index(): InertiaResponse
     {
-        return Inertia::render('organization/index', []);
+        return Inertia::render('organizations/index', []);
     }
 
     public function search(SearchOrganizationsRequest $request)

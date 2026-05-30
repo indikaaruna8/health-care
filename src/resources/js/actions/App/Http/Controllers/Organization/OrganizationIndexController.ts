@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::index
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:21
-* @route '/organization'
+* @route '/organizations'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -11,13 +11,13 @@ export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 index.definition = {
     methods: ["get","head"],
-    url: '/organization',
+    url: '/organizations',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::index
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:21
-* @route '/organization'
+* @route '/organizations'
 */
 index.url = (options?: RouteQueryOptions) => {
     return index.definition.url + queryParams(options)
@@ -26,7 +26,7 @@ index.url = (options?: RouteQueryOptions) => {
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::index
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:21
-* @route '/organization'
+* @route '/organizations'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -36,7 +36,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::index
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:21
-* @route '/organization'
+* @route '/organizations'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
@@ -46,7 +46,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::search
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:26
-* @route '/organization/search'
+* @route '/organizations/search'
 */
 export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: search.url(options),
@@ -55,13 +55,13 @@ export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => (
 
 search.definition = {
     methods: ["get","head"],
-    url: '/organization/search',
+    url: '/organizations/search',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::search
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:26
-* @route '/organization/search'
+* @route '/organizations/search'
 */
 search.url = (options?: RouteQueryOptions) => {
     return search.definition.url + queryParams(options)
@@ -70,7 +70,7 @@ search.url = (options?: RouteQueryOptions) => {
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::search
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:26
-* @route '/organization/search'
+* @route '/organizations/search'
 */
 search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: search.url(options),
@@ -80,7 +80,7 @@ search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 /**
 * @see \App\Http\Controllers\Organization\OrganizationIndexController::search
 * @see app/Http/Controllers/Organization/OrganizationIndexController.php:26
-* @route '/organization/search'
+* @route '/organizations/search'
 */
 search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: search.url(options),

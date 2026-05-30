@@ -15,7 +15,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import organizations from '@/routes/organizations';
 import type { NavItem } from '@/types';
+
 
 const mainNavItems: NavItem[] = [
     {
@@ -25,7 +27,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Organizations',
-        href: '/organization',
+        href: organizations.index().url,
         icon: LayoutGrid,
     },
 ];
