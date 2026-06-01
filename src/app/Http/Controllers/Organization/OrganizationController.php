@@ -10,7 +10,7 @@ use App\Http\Requests\Organization\SearchOrganizationsRequest;
 use App\Http\Requests\Organization\UpdateOrganizationRequest;
 use App\Http\Requests\Organization\CreateOrganizationRequest ;
 use App\Http\Resources\Organization\OrganizationResource;
-use App\Services\OrganizationService;
+use App\Services\Organization\OrganizationService;
 use Symfony\Component\HttpFoundation\Response;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;

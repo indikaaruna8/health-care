@@ -73,9 +73,6 @@ class Organization extends Model
 
     protected $hidden = ['pivot'];
 
-    /**
-     * One organization has many facilities
-     */
     public function facilities(): HasMany
     {
         return $this->hasMany(Facility::class);
