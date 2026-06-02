@@ -6,7 +6,7 @@ use App\Enums\Attributes\Country as CountryEnum;
 use App\Repositories\Attributes\Contracts\CountryRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class CountryService
+class CountryService implements Contracts\CountryServiceInterface
 {
     public function __construct(
         private CountryRepositoryInterface $countryRepository
@@ -31,5 +31,10 @@ class CountryService
     public function fromEnum(): array
     {
         return CountryEnum::all();
+    }
+
+    public function enumToArray(): array
+    {
+        return CountryEnum::toArray();
     }
 }

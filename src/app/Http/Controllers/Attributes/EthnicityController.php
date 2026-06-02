@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Attributes;
 
+use App\Http\Controllers\Controller;
 use App\Services\EthnicityService;
 use Illuminate\Http\JsonResponse;
 

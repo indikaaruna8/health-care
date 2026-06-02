@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Attributes;
 
 use App\Http\Controllers\Controller;
-use App\Services\Attributes\Contracts\GenderServiceInterface;
 use Illuminate\Http\JsonResponse;
 
 class GenderController extends Controller
 {
     public function __construct(
-        private GenderServiceInterface $genderService
+        private \App\Services\Attributes\Contracts\GenderServiceInterface $genderService
     ) {
     }
 
