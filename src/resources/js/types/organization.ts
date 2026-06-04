@@ -23,3 +23,8 @@ export interface Organization {
     deleted_at: string | null;
     trial_days_remaining?: number;
 }
+
+export interface ValidationErrorResponse {
+    message: string;
+    errors: Record<string, string[]>;
+}

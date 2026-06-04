@@ -24,7 +24,7 @@ class OrganizationController extends Controller
 
     public function store(CreateOrganizationRequest $request, OrganizationService $service): OrganizationResource
     {
-        $data = $request->onlyValidated();
+        $data = $request->validated();
 
         $result = $service->create($data);
 
@@ -50,7 +50,7 @@ class OrganizationController extends Controller
 
     public function update(UpdateOrganizationRequest $request, OrganizationService $service, $id): Response
     {
-        $service->update($id, $request->onlyValidated());
+        $service->update($id, $request->validated());
 
         return response()->noContent();
     }

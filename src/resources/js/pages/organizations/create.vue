@@ -1,3 +1,61 @@
+<script setup lang="ts">
+import { AxiosError } from 'axios';
+import { reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import healthImage from '@/asserts/images/helth-mangement.jpg';
+import FormLayoutV1 from '@/components/layouts/FormLayoutV1.vue';
+import { organizationService } from '@/services/organization';
+import type {
+    Organization,
+    ValidationErrorResponse,
+} from '@/types/organization';
+import ValidationErrors from '@/components/ValidationErrors.vue';
+const errors = ref<Record<string, string[]>>({});
+const { t } = useI18n();
+
+const loading = ref(false);
+
+const form = reactive({
+    name: 'Ziemann, Larkin and Towne',
+    slug: 'ziemann-larkin-and-towne',
+    type: 'startup',
+    registration_number: 'REG0404393048',
+    tax_id: 'TAX931245572',
+    email: 'haskell52@zulauf.com',
+    phone: '+1.980.975.5993',
+    address: '213 Emmalee Hill Apt. 336',
+    city: 'West Max',
+    country: 'Comoros',
+    timezone: 'America/Rankin_Inlet',
+    locale: 'fr',
+    plan: 'free',
+    subscription_status: 'canceled',
+    trial_ends_at: '2026-06-07',
+} as Organization);
+
+const submit = async () => {
+    try {
+        loading.value = true;
+
+        const response = await organizationService.create(form);
+
+        console.log('Saved successfully', response);
+
+        alert('Organization saved successfully!');
+    } catch (error) {
+        const err = error as AxiosError<ValidationErrorResponse>;
+
+        if (err.response?.status === 422) {
+            errors.value = err.response.data.errors;
+        }
+        console.debug('Save failed', error);
+        alert('Failed to save organization');
+    } finally {
+        loading.value = false;
+    }
+};
+</script>
+
 <template>
     <FormLayoutV1 :form-title="t('organizations.create.title')" :show-back="true" :show-save-to-draft="true"
         @save="submit">
@@ -19,7 +77,6 @@
                         <span class="text-sm font-semibold text-slate-400 uppercase tracking-wider">01</span>
                         <h2 class="text-base font-semibold text-slate-800">Organization Information</h2>
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <!-- Organization Name -->
                         <div>
@@ -28,8 +85,8 @@
                             </label>
                             <input v-model="form.name" type="text"
                                 class="w-full rounded-lg border-slate-200 bg-slate-50/40 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 px-4 py-2.5 text-sm" />
+                            <ValidationErrors :errors="errors" field="name" />
                         </div>
-
                         <!-- Slug -->
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1.5">
@@ -38,8 +95,8 @@
                             </label>
                             <input v-model="form.slug" type="text"
                                 class="w-full rounded-lg border-slate-200 bg-slate-50/40 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 px-4 py-2.5 text-sm" />
+                            <ValidationErrors :errors="errors" field="slug" />
                         </div>
-
                         <!-- Type -->
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1.5">
@@ -54,8 +111,8 @@
                                 <option value="laboratory">Laboratory</option>
                                 <option value="pharmacy">Pharmacy</option>
                             </select>
+                            <ValidationErrors :errors="errors" field="type" />
                         </div>
-
                         <!-- Registration Number -->
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1.5">
@@ -63,8 +120,8 @@
                             </label>
                             <input v-model="form.registration_number" type="text"
                                 class="w-full rounded-lg border-slate-200 bg-slate-50/40 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 px-4 py-2.5 text-sm" />
+                            <ValidationErrors :errors="errors" field="registration_number" />
                         </div>
-
                         <!-- Tax ID -->
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1.5">
@@ -72,6 +129,10 @@
                             </label>
                             <input v-model="form.tax_id" type="text"
                                 class="w-full rounded-lg border-slate-200 bg-slate-50/40 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 px-4 py-2.5 text-sm" />
+                            <p v-if="errors.tax_id?.length" class="text-red-500">
+                                {{ errors.tax_id[0] }}
+                            </p>
+                            <ValidationErrors :errors="errors" field="tax_id" />
                         </div>
                     </div>
                 </div>
@@ -89,14 +150,15 @@
                             </label>
                             <input v-model="form.email" type="email"
                                 class="w-full rounded-lg border-slate-200 bg-slate-50/40 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 px-4 py-2.5 text-sm" />
+                            <ValidationErrors :errors="errors" field="email" />
                         </div>
-
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1.5">
                                 Phone Number <span class="text-red-500">*</span>
                             </label>
                             <input v-model="form.phone" type="text"
                                 class="w-full rounded-lg border-slate-200 bg-slate-50/40 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 px-4 py-2.5 text-sm" />
+                            <ValidationErrors :errors="errors" field="phone" />
                         </div>
                     </div>
                 </div>
@@ -208,9 +270,7 @@
                     </div>
                 </div>
             </div>
-
         </template>
-
         <template #helpBefore>
             <!-- Help sidebar content goes here -->
             <div class="p-5 pb-2 border-b border-blue-100/50 bg-white/40">
@@ -283,34 +343,3 @@
         </template>
     </FormLayoutV1>
 </template>
-
-<script setup lang="ts">
-import { reactive } from 'vue';
-import { useI18n } from 'vue-i18n';
-import healthImage from '@/asserts/images/helth-mangement.jpg';
-import FormLayoutV1 from '@/components/layouts/FormLayoutV1.vue';
-const { t } = useI18n()
-
-const form = reactive({
-    name: 'Ziemann, Larkin and Towne',
-    slug: 'ziemann-larkin-and-towne',
-    type: 'startup',
-    registration_number: 'REG0404393048',
-    tax_id: 'TAX931245572',
-    email: 'haskell52@zulauf.com',
-    phone: '+1.980.975.5993',
-    address: '213 Emmalee Hill Apt. 336',
-    city: 'West Max',
-    country: 'Comoros',
-    timezone: 'America/Rankin_Inlet',
-    locale: 'fr',
-    plan: 'free',
-    subscription_status: 'canceled',
-    trial_ends_at: '2026-06-07',
-});
-
-const submit = () => {
-    console.log('Form submitted:', form);
-    alert('Organization saved successfully!');
-};
-</script>
