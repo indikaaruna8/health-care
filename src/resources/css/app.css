@@ -169,3 +169,9 @@
         @apply border border-input;
     }
 }
+
+.bg-primary {
+    --v-theme-overlay-multiplier: var(--v-theme-primary-overlay-multiplier);
+    background-color: rgb(58, 105, 175) !important;
+    color: #fff !important;
+}
