@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Attributes;
 
 use App\Http\Controllers\Controller;
-use App\Services\Attibutes\App\Services\Attributes\Contracts\CountryServiceInterface as CountryService;
+use App\Services\Attributes\Contracts\CountryServiceInterface as CountryService;
 use Illuminate\Http\JsonResponse;
 
 class CountryController extends Controller

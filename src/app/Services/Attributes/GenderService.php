@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Attributes;
 
 use App\Enums\Attributes\Gender as GenderEnum;
 use App\Repositories\Attributes\Contracts\GenderRepositoryInterface;
 use Illuminate\Support\Collection;
 use App\Models\Attributes\Gender;
+use App\Services\Attributes\Contracts\GenderServiceInterface;
 
-class GenderService
+class GenderService implements GenderServiceInterface
 {
     public function __construct(
         private GenderRepositoryInterface $genderRepository

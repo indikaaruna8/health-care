@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Attributes;
 
 use App\Http\Controllers\Controller;
-use App\Services\EthnicityService;
+use App\Services\Attributes\Contracts\EthnicityServiceInterface as EthnicityService;
 use Illuminate\Http\JsonResponse;
 
 class EthnicityController extends Controller

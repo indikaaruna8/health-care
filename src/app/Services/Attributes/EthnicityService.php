@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Attributes;
 
 use App\Enums\Attributes\Ethnicity as EthnicityEnum;
 use App\Repositories\Attributes\Contracts\EthnicityRepositoryInterface;
 use Illuminate\Support\Collection;
 use App\Models\Attributes\Ethnicity;
+use App\Services\Attributes\Contracts\EthnicityServiceInterface;
 
-class EthnicityService implements Contracts\EthnicityServiceInterface
+class EthnicityService implements EthnicityServiceInterface
 {
     public function __construct(
         private EthnicityRepositoryInterface $ethnicityRepository
